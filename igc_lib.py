@@ -24,6 +24,7 @@ was considered broken.
 
 from __future__ import print_function
 
+import pandas as pd
 import collections
 import datetime
 import math
@@ -453,6 +454,12 @@ class Glide:
     def time_change(self):
         """Returns the time spent in the glide, seconds."""
         return self.exit_fix.timestamp - self.enter_fix.timestamp
+    
+### homebrew start ###
+
+# We need something, that returns singel elements to avoid str cutting
+
+### homebrew end ###
 
     def speed(self):
         """Returns the average speed in the glide, km/h."""
@@ -460,24 +467,26 @@ class Glide:
 
     def alt_change(self):
         """Return the overall altitude change in the glide, meters."""
-        return self.exit_fix.alt - self.enter_fix.alt
+        return self.enter_fix.alt - self.exit_fix.alt
 
     def glide_ratio(self):
         """Returns the L/D of the glide."""
         if math.fabs(self.alt_change()) < 1e-7:
             return 0.0
         return (self.track_length * 1000.0) / self.alt_change()
-
+    
     def __repr__(self):
         return self.__str__()
 
     def __str__(self):
         hms = _rawtime_float_to_hms(self.time_change())
+        
         return (
             ("Glide(dist=%.2f km, avg_speed=%.2f kph, "
              "avg L/D=%.2f duration=%dm %ds)") % (
                 self.track_length, self.speed(), self.glide_ratio(),
                 hms.minutes, hms.seconds))
+                
 
 
 class FlightParsingConfig(object):
